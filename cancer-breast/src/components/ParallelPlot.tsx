@@ -1,16 +1,8 @@
 import * as d3 from "d3";
 import {useEffect, useRef} from "react";
-import {BreastCancerData, BreastCancerRow} from "../types";
+import {BreastCancerRow, ParallelPlotProps} from "../types";
+import {normalize} from "../util/common";
 
-interface ParallelPlotProps {
-    data: BreastCancerData;
-}
-
-const normalize = (data: BreastCancerRow, keys: string[]): string => {
-    return keys.map(key =>
-        data[key]?.toString().trim().replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase()
-    ).join("-");
-};
 
 const width = 900;
 const height = 500;
@@ -19,6 +11,33 @@ const margin = {top: 50, right: 50, bottom: 50, left: 100};
 const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
     const initialColor = "Race_Ethnicity"
     const svgRef = useRef<SVGSVGElement | null>(null);
+
+    const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
+        .domain(Array.from(new Set(data.rows.map(d => d[initialColor]?.toString().trim() ?? "Unknown"))));
+
+    const highlight = (_: any, d: BreastCancerRow) => {
+        const classSelector = `.${normalize(d, ["Race_Ethnicity", "Age_Group"])}`;
+
+        d3.selectAll(".line")
+            .transition().duration(350)
+            .style("stroke", "lightgrey")
+            .style("opacity", 0.15)
+            .style("stroke-opacity", 0.1);
+
+        d3.selectAll(classSelector)
+            .transition().duration(150)
+            .style("stroke", colorScale(d[initialColor] ?? "Unknown"))
+            .style("stroke-width", 4)
+            .style("stroke-opacity", 1.5);
+    }
+
+    const doNotHighlight = () => {
+        d3.selectAll(".line")
+            .transition().duration(500)
+            .style("stroke", d => colorScale((d as BreastCancerRow)[initialColor] ?? "Unknown"))
+            .style("stroke-width", 1.5)
+            .style("stroke-opacity", 1);
+    }
 
     useEffect(() => {
         if (data.rows.length === 0) return;
@@ -29,8 +48,6 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
             .range([margin.left, width - margin.right]);
 
         const scales: { [key: string]: d3.ScalePoint<string> } = {};
-        const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
-            .domain(Array.from(new Set(data.rows.map(d => d[initialColor]?.toString().trim() ?? "Unknown"))));
 
         const line = d3.line<[number, number]>()
             .x(([x]) => x)
@@ -65,29 +82,6 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
             .on("mouseover", highlight)
             .on("mouseleave", doNotHighlight);
 
-        function highlight(_: any, d: BreastCancerRow) {
-            const classSelector = `.${normalize(d, ["Race_Ethnicity", "Age_Group"])}`;
-
-            d3.selectAll(".line")
-                .transition().duration(350)
-                .style("stroke", "lightgrey")
-                .style("opacity", 0.15)
-                .style("stroke-opacity", 0.1);
-
-            d3.selectAll(classSelector)
-                .transition().duration(150)
-                .style("stroke", colorScale(d[initialColor] ?? "Unknown"))
-                .style("stroke-width", 4)
-                .style("stroke-opacity", 1.5);
-        }
-
-        function doNotHighlight() {
-            d3.selectAll(".line")
-                .transition().duration(500)
-                .style("stroke", d => colorScale((d as BreastCancerRow)[initialColor] ?? "Unknown"))
-                .style("stroke-width", 1.5)
-                .style("stroke-opacity", 1);
-        }
 
         dimensions.forEach(dim => {
             svg.append("g")

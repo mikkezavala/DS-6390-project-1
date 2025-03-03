@@ -22,7 +22,6 @@ const Barchart: FC<BarchartProps> = ({data}) => {
     }, [data]);
 
     useEffect(() => {
-        console.log(groupedData)
         if (groupedData.length === 0) return;
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();

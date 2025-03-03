@@ -39,3 +39,7 @@ export interface ChartRow {
 export interface BarchartProps {
     data: BreastCancerData;
 }
+
+export interface ParallelPlotProps {
+    data: BreastCancerData;
+}
