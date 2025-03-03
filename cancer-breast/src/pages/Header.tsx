@@ -1,8 +1,16 @@
-import {Avatar, Layout, Menu} from "antd";
+import {Avatar, Layout, Menu, Switch} from "antd";
 import {Link} from "react-router-dom";
 import ribbon from '/src/assets/ribbon.png'
+import {useContext} from "react";
+import {ThemeSwitcherContext} from "../providers/ThemeSwitcherContext";
+import {MoonFilled, SunFilled} from "@ant-design/icons";
 
 export const Header = () => {
+    const {toggleTheme} = useContext(ThemeSwitcherContext)
+    const onChange = (checked: boolean) => {
+        const theme = checked ? "dark" : "light";
+        toggleTheme(theme)
+    }
     return (
         <Layout.Header style={{display: 'flex', alignItems: 'center', color: "#fff0f6"}}>
             <div style={{color: "#fff", marginRight: 10}}>
@@ -23,6 +31,12 @@ export const Header = () => {
                     <Link to="/team">Team</Link>
                 </Menu.Item>
             </Menu>
+            <Switch
+                onChange={onChange}
+                defaultChecked
+                checkedChildren={<MoonFilled/>}
+                unCheckedChildren={<SunFilled/>}
+            />
         </Layout.Header>
     );
 }
