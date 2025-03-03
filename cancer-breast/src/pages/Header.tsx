@@ -27,9 +27,13 @@ export const Header = () => {
                 <Menu.Item key="nav-1">
                     <Link to="/">Home</Link>
                 </Menu.Item>
-                <Menu.Item key="nav-22">
+                <Menu.Item key="nav-2">
+                    <Link to="/dataset">Data Set Description</Link>
+                </Menu.Item>
+                <Menu.Item key="nav-3">
                     <Link to="/team">Team</Link>
                 </Menu.Item>
+
             </Menu>
             <Switch
                 onChange={onChange}

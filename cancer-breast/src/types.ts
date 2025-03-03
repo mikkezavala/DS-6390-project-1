@@ -59,3 +59,7 @@ export interface ThemeSwitcherProps {
     themeAlgorithm: any;
     themeSwitcher: (mode: string) => void;
 }
+
+export interface DataSetProps {
+    data: BreastCancerData;
+}
