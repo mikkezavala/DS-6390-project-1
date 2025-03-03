@@ -1,19 +1,20 @@
 import * as d3 from "d3"
 import Barchart from "./components/Barchart";
 import React, {useEffect, useMemo, useState} from 'react';
-import {Card, Col, Divider, Layout, Row, theme} from 'antd';
+import {Card, Col, Divider, Layout, Row} from 'antd';
 
 import {BreastCancerData, BreastCancerRow} from "./types";
 import ParallelPlot from "./components/ParallelPlot";
 import {AGE_ORDER} from "./util/constant";
+import SequenceSunburst from "./components/SequenceSunburst";
 
 const {Header, Content} = Layout;
 
 
 const App: React.FC = () => {
-    const {
-        token: {colorBgContainer},
-    } = theme.useToken();
+    // const {
+    //     token:,
+    // } = theme.useToken();
 
     const [data, setData] = useState<BreastCancerData>({meta: {count: 0}, rows: []} as BreastCancerData);
 
@@ -53,14 +54,22 @@ const App: React.FC = () => {
                 <div className="demo-logo"/>
                 Breast Cancer Research Visualization
             </Header>
-            <Content style={{padding: '0 20px'}}>
-                <Row gutter={10}>
+            <Content style={{padding: '10px 20px'}}>
+                <Row gutter={16}>
                     <Col span={12}>
                         <Card title="Card title" variant="borderless">
                             <Barchart data={chartData}/>
                         </Card>
                     </Col>
-                    <Divider orientation="left">Responsive</Divider>
+                    <Col span={12}>
+                        <Card title="Card title" variant="borderless">
+                            <SequenceSunburst data={chartData.rows}/>
+                        </Card>
+                    </Col>
+
+                </Row>
+                <Divider style={{margin: '2px 0'}}/>
+                <Row gutter={16}>
                     <Col span={24}>
                         <Card title="Card title" variant="borderless">
                             <ParallelPlot data={chartData}/>

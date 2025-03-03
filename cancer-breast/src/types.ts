@@ -29,17 +29,27 @@ export interface BreastCancerData {
     rows: BreastCancerRow[]
 }
 
-export interface ChartRow {
-    count: number;
-    yLabel: string;
-    xLabel: string;
-    fieldGroup: string;
-}
-
 export interface BarchartProps {
     data: BreastCancerData;
 }
 
 export interface ParallelPlotProps {
     data: BreastCancerData;
+}
+
+export interface SunburstProps {
+    data: BreastCancerRow[];
+}
+
+export interface SunBurstCoords {
+    x0?: number;
+    x1?: number;
+    y0?: number;
+    y1?: number;
+}
+
+export interface SunBurstHierarchy {
+    name: string;
+    value: number;
+    children: any;
 }
