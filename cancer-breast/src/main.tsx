@@ -43,7 +43,7 @@ export const AppWrapper = () => {
                     Menu: {
                         darkItemBg: '#520339',
                         darkItemSelectedBg: '#7a0178'
-                    }
+                    },
                 },
                 algorithm: themeMode.themeAlgorithm,
                 token: {

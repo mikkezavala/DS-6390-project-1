@@ -2,15 +2,25 @@ import * as d3 from "d3";
 import {FC, useEffect, useRef, useState} from "react";
 import useContainerSize from "../hooks/resizeHook";
 import {BreastCancerRow, SunBurstCoords, SunBurstHierarchy, SunburstProps} from "../types";
-import {Flex, Tag} from "antd";
+import {Col, Form, Row, Select, Tag} from "antd";
+import {normalizeLabel, prepareOptions} from "../util/common";
 
 const Sunburst: FC<SunburstProps> = ({data}) => {
     const {containerRef, dimensions: containerDimensions} = useContainerSize();
     const svgRef = useRef<SVGSVGElement | null>(null);
 
-    const [percentage, setPercentage] = useState<Record<string, number>>({});
     const [breadcrumbs, setBreadcrumbs] = useState<string[]>([]);
-
+    const [percentage, setPercentage] = useState<Record<string, number>>({});
+    const sequenceOptions = [
+        "Race_Ethnicity",
+        "Age_Group",
+        "Breast_Density",
+        "Hormone_Replacement_Therapy",
+        "Breast_Cancer_History",
+        "BMI_Group",
+        "Age_First_Birth"
+    ]
+    const [activeSequence, setActiveSequence] = useState<string[]>(sequenceOptions.slice(0, 3))
 
     useEffect(() => {
         if (!data.rows.length) return;
@@ -22,7 +32,11 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
             const root: SunBurstHierarchy = {name: "root", children: [] as any, value: 0};
             rows.forEach(row => {
                 let currentLevel = root.children;
-                const sequence = [row.Race_Ethnicity, row.Age_Group, row.Breast_Density].filter(Boolean);
+                const sequence = activeSequence.reduce((curr: string[], next) => {
+                    curr.push(row[next].toString());
+                    return curr
+                }, []).filter(Boolean)
+                // const sequence = [row.Race_Ethnicity, row.Age_Group, row.Breast_Density].filter(Boolean);
                 sequence.forEach((name, i) => {
                     let existing = currentLevel.find((d: any) => d.name === name);
                     if (!existing) {
@@ -78,32 +92,58 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
                 path.transition().duration(200).attr("fill-opacity", 1);
             });
 
-    }, [data, containerDimensions]);
+    }, [data, containerDimensions, activeSequence]);
+
+    const onSelectChange = (value: string[]) => {
+        setActiveSequence(value)
+    }
 
     const breadcrumbSizing = {
-        height: 40,
+        height: 20,
         marginBottom: 20
     }
     const svgSizing = {
         width: containerDimensions.width,
-        height: 500 - (breadcrumbSizing.height < 0 ? 0: breadcrumbSizing.height),
-        viewBoxHeight: 500
+        height: containerDimensions.height - (breadcrumbSizing.height + breadcrumbSizing.marginBottom) -100,
+        viewBoxHeight: containerDimensions.height - 50
     }
 
     return (
-        <div ref={containerRef} style={{width: "100%", maxHeight: "500px"}}>
-            <Flex gap="4px" style={{marginBottom: breadcrumbSizing.marginBottom}}>
-                {breadcrumbs.length == 0 ? <Tag color="magenta">Hover the plot</Tag> : breadcrumbs.map((crumb, index) => (
-                    <Tag key={`crumb-${index}`} color="magenta">{crumb} {percentage?.[crumb] &&
-                        <span style={{fontWeight: "bold"}}>{`${percentage[crumb]}%`}</span>}</Tag>
-                ))}
-            </Flex>
-            <Flex>
-                <svg ref={svgRef} width={svgSizing.width} height={svgSizing.height}
+        <Row>
+            <Col span={24}>
+                <Form name="cat-select">
+                    <Form.Item<string>
+                        label="Select Category"
+                        name="category"
+                    >
+                        <Select
+                            allowClear
+                            mode="multiple"
+                            style={{width: '80%'}}
+                            onChange={onSelectChange}
+                            defaultValue={activeSequence}
+                            placeholder="Select Risk Factors"
+                            options={prepareOptions(sequenceOptions)}
+                        />
+                    </Form.Item>
+                </Form>
+            </Col>
+            <Col span={24} style={{marginBottom: breadcrumbSizing.marginBottom, height: breadcrumbSizing.height}}>
+                {activeSequence.length == 0 ?
+                    <Tag color="magenta">Select Risk Factors</Tag> : breadcrumbs.map((crumb, index) => (
+                        <Tag key={`crumb-${index}`}
+                             color="magenta">{`${normalizeLabel(activeSequence[index])}: ${crumb}`}{percentage?.[crumb] &&
+                            <b>{` - ${percentage[crumb]}%`}</b>}</Tag>
+                    ))}
+            </Col>
+            <Col span={24} ref={containerRef} style={{width: "100%", minHeight: 727}}>
+                <svg ref={svgRef} width={svgSizing.width} height={svgSizing.viewBoxHeight}
                      viewBox={`0 0 ${svgSizing.width} ${svgSizing.viewBoxHeight}`}/>
-            </Flex>
-        </div>
-    );
+            </Col>
+        </Row>
+
+    )
+        ;
 };
 
 export default Sunburst;

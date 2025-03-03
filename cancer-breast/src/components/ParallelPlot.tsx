@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import React, {useContext, useEffect, useMemo, useRef} from "react";
 import {BreastCancerRow, ParallelPlotProps} from "../types";
-import {normalize} from "../util/common";
+import {normalize, normalizeLabel} from "../util/common";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
 import {Flex} from "antd";
@@ -107,7 +107,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
                 .attr("y", margin.top - 40)
                 .attr("x", -5)
                 .attr("text-anchor", "end")
-                .text(dim.replace(/_/g, " "))
+                .text(normalizeLabel(dim))
                 .style("font-size", "14px")
                 .style("fill", textColor);
         });

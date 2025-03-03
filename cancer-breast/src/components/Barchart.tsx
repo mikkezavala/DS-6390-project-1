@@ -4,6 +4,7 @@ import {BarchartProps} from "../types";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
 import {Flex, Form, Select, Tooltip} from "antd";
+import {prepareOptions} from "../util/common";
 
 const Barchart: FC<BarchartProps> = ({data}) => {
     const margin = {top: 30, right: 30, bottom: 120, left: 60};
@@ -98,13 +99,6 @@ const Barchart: FC<BarchartProps> = ({data}) => {
         setActiveGroup(value)
     }
 
-    const selectOptions = filterGroups.map(option => {
-        return {
-            value: option,
-            label: option.replace(/_/, " "),
-        }
-    })
-
     return (
         <Flex gap="middle" wrap vertical>
             <Form name="cat-select">
@@ -114,9 +108,9 @@ const Barchart: FC<BarchartProps> = ({data}) => {
                 >
                     <Select
                         style={{width: '50%'}}
-                        defaultValue={activeGroup}
-                        options={selectOptions}
                         onChange={onSelectChange}
+                        defaultValue={activeGroup}
+                        options={prepareOptions(filterGroups)}
                     />
                 </Form.Item>
             </Form>
