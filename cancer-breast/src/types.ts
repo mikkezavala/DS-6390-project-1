@@ -38,7 +38,7 @@ export interface ParallelPlotProps {
 }
 
 export interface SunburstProps {
-    data: BreastCancerRow[];
+    data: BreastCancerData;
 }
 
 export interface SunBurstCoords {

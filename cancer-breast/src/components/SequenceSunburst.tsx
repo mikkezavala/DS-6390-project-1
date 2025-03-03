@@ -13,7 +13,7 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
 
 
     useEffect(() => {
-        if (!data.length) return;
+        if (!data.rows.length) return;
 
         const width = containerDimensions.width;
         const radius = width / 2;
@@ -38,7 +38,7 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
             return d3.hierarchy(root).sum(d => d.value);
         };
 
-        const root = buildHierarchy(data);
+        const root = buildHierarchy(data.rows);
         const partition = d3.partition<SunBurstHierarchy>().size([2 * Math.PI, radius]);
         partition(root);
 

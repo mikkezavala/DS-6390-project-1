@@ -3,8 +3,8 @@
 .RData
 .Ruserdata
 
+.idea
+**/.idea
+**/.DS_Store
 
-.DS_Store
-.RData
-.Rhistory
-*.idea
+node_modules/*

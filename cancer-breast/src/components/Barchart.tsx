@@ -71,6 +71,7 @@ const Barchart: FC<BarchartProps> = ({data}) => {
                 const bar = d3.select(this);
 
                 bar.attr("data-original-fill", bar.attr("fill"))
+                    .style("cursor", "pointer")
                     .transition().duration(200)
                     .attr("fill", "purple")
                     .attr("opacity", 0.35);

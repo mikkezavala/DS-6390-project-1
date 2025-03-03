@@ -4,6 +4,7 @@ import {BreastCancerRow, ParallelPlotProps} from "../types";
 import {normalize} from "../util/common";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
+import {Flex} from "antd";
 
 
 const margin = {top: 50, right: 0, bottom: 50, left: 150};
@@ -43,6 +44,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
                 .style("stroke-opacity", 0.1);
 
             d3.selectAll(classSelector)
+                .style("cursor", "pointer")
                 .transition().duration(150)
                 .style("stroke", colorScale(d[initialColor] ?? "Unknown"))
                 .style("stroke-width", 4)
@@ -108,10 +110,10 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
     }, [sortedData, containerDimensions, colorScale]);
 
     return (
-        <div ref={containerRef} style={{width: "100%", height: "100%", maxHeight: "500px", position: "relative"}}>
+        <Flex ref={containerRef} style={{width: "100%", height: "100%", maxHeight: "500px", position: "relative"}}>
             <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
                  viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
-        </div>
+        </Flex>
     );
 };
 
