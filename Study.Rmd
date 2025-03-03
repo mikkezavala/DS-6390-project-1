@@ -35,7 +35,7 @@ df <- read.csv("risk_factors_reduced.csv", stringsAsFactors = FALSE)
 
 max_size <- 2500
 # Rename columns with spaces (using backticks when needed)
-df_clean <- df |> sample_n(max_size) %>%
+df_clean <- df |> sample_n(max_size) |>
   rename(
     `Year` = year,
     `Age_Group` = age_group_5_years,
@@ -51,7 +51,6 @@ df_clean <- df |> sample_n(max_size) %>%
     `Breast_Cancer_History` = breast_cancer_history,
     `Count` = count
   ) %>%
-  
   # Replace coded values with human-readable labels
   mutate(
     `Age_Group` = case_when(
@@ -70,7 +69,6 @@ df_clean <- df |> sample_n(max_size) %>%
       `Age_Group` == 13 ~ ">85",
       TRUE ~ "Unknown"
     ),
-    
     `Race_Ethnicity` = case_when(
       `Race_Ethnicity` == 1 ~ "Non-Hispanic White",
       `Race_Ethnicity` == 2 ~ "Non-Hispanic Black",
@@ -81,14 +79,12 @@ df_clean <- df |> sample_n(max_size) %>%
       `Race_Ethnicity` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `First_Degree_History` = case_when(
       `First_Degree_History` == 0 ~ "No",
       `First_Degree_History` == 1 ~ "Yes",
       `First_Degree_History` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `Age_Menarche` = case_when(
       `Age_Menarche` == 0 ~ ">14",
       `Age_Menarche` == 1 ~ "12-13",
@@ -96,7 +92,6 @@ df_clean <- df |> sample_n(max_size) %>%
       `Age_Menarche` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `Age_First_Birth` = case_when(
       `Age_First_Birth` == 0 ~ "<20",
       `Age_First_Birth` == 1 ~ "20-24",
@@ -106,7 +101,6 @@ df_clean <- df |> sample_n(max_size) %>%
       `Age_First_Birth` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `Breast_Density` = case_when(
       `Breast_Density` == 1 ~ "Almost entirely fat",
       `Breast_Density` == 2 ~ "Scattered fibroglandular densities",
@@ -115,14 +109,12 @@ df_clean <- df |> sample_n(max_size) %>%
       `Breast_Density` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `Hormone_Replacement_Therapy` = case_when(
       `Hormone_Replacement_Therapy` == 0 ~ "No",
       `Hormone_Replacement_Therapy` == 1 ~ "Yes",
       `Hormone_Replacement_Therapy` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `Menopause_Status` = case_when(
       `Menopause_Status` == 1 ~ "Pre- or Peri-menopausal",
       `Menopause_Status` == 2 ~ "Post-menopausal",
@@ -130,7 +122,6 @@ df_clean <- df |> sample_n(max_size) %>%
       `Menopause_Status` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `BMI_Group` = case_when(
       `BMI_Group` == 1 ~ "10-24.99",
       `BMI_Group` == 2 ~ "25-29.99",
@@ -139,21 +130,19 @@ df_clean <- df |> sample_n(max_size) %>%
       `BMI_Group` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `Biopsy_History` = case_when(
       `Biopsy_History` == 0 ~ "No",
       `Biopsy_History` == 1 ~ "Yes",
       `Biopsy_History` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     ),
-
     `Breast_Cancer_History` = case_when(
       `Breast_Cancer_History` == 0 ~ "No",
       `Breast_Cancer_History` == 1 ~ "Yes",
       `Breast_Cancer_History` == 9 ~ "Unknown",
       TRUE ~ "Unknown"
     )
-  )
+  ) |> filter(!if_any(everything(), ~ . == "Unknown"))
 
 
 # Save cleaned data as CSV for D3.js
@@ -163,6 +152,6 @@ write.csv(df_clean, "risk_factors_reduced_named.csv", row.names = FALSE)
 cat("CSV file 'risk_factors_reduced_named.csv' created successfully!")
 
 # json_data <- toJSON(data, pretty = TRUE)
-# 
+#
 # write(json_data, "risk_factors_reduced.json")
 ```

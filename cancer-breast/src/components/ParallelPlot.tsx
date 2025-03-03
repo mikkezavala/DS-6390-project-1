@@ -1,61 +1,70 @@
 import * as d3 from "d3";
-import {useEffect, useRef} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {BreastCancerRow, ParallelPlotProps} from "../types";
 import {normalize} from "../util/common";
+import {AGE_ORDER} from "../util/constant";
+import useContainerSize from "../hooks/resizeHook";
 
 
-const width = 900;
-const height = 500;
-const margin = {top: 50, right: 50, bottom: 50, left: 100};
-
+const margin = {top: 50, right: 0, bottom: 50, left: 150};
 const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
     const initialColor = "Race_Ethnicity"
     const svgRef = useRef<SVGSVGElement | null>(null);
-
+    // Resize on Re-Render
+    const { containerRef, dimensions: containerDimensions } = useContainerSize();
+    
     const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
         .domain(Array.from(new Set(data.rows.map(d => d[initialColor]?.toString().trim() ?? "Unknown"))));
 
-    const highlight = (_: any, d: BreastCancerRow) => {
-        const classSelector = `.${normalize(d, ["Race_Ethnicity", "Age_Group"])}`;
-
-        d3.selectAll(".line")
-            .transition().duration(350)
-            .style("stroke", "lightgrey")
-            .style("opacity", 0.15)
-            .style("stroke-opacity", 0.1);
-
-        d3.selectAll(classSelector)
-            .transition().duration(150)
-            .style("stroke", colorScale(d[initialColor] ?? "Unknown"))
-            .style("stroke-width", 4)
-            .style("stroke-opacity", 1.5);
-    }
-
-    const doNotHighlight = () => {
-        d3.selectAll(".line")
-            .transition().duration(500)
-            .style("stroke", d => colorScale((d as BreastCancerRow)[initialColor] ?? "Unknown"))
-            .style("stroke-width", 1.5)
-            .style("stroke-opacity", 1);
-    }
+    const sortedData = useMemo(() => {
+        return data?.rows.sort((a, b) => AGE_ORDER.indexOf(b.Age_Group) - AGE_ORDER.indexOf(a.Age_Group))
+    }, [data]);
 
     useEffect(() => {
-        if (data.rows.length === 0) return;
+        if (sortedData.length === 0) return;
+        const {width, height} = containerDimensions;
+        // Let's prepare some variables
         const svg = d3.select(svgRef.current);
-        const dimensions = ["Race_Ethnicity", "Age_Group", "Hormone_Replacement_Therapy", "Breast_Density"];
-        const xScale = d3.scalePoint()
-            .domain(dimensions)
-            .range([margin.left, width - margin.right]);
-
         const scales: { [key: string]: d3.ScalePoint<string> } = {};
+        const dimensions = ["Race_Ethnicity", "Age_Group", "Hormone_Replacement_Therapy", "Breast_Density"];
 
+        // Helper functions, sadly they need to be computed in rendering
         const line = d3.line<[number, number]>()
             .x(([x]) => x)
             .y(([, y]) => y);
 
+        const highlight = (_: any, d: BreastCancerRow) => {
+            const classSelector = `.${normalize(d, ["Race_Ethnicity", "Age_Group"])}`;
+
+            d3.selectAll(".line")
+                .transition().duration(350)
+                .style("stroke", "lightgrey")
+                .style("opacity", 0.15)
+                .style("stroke-opacity", 0.1);
+
+            d3.selectAll(classSelector)
+                .transition().duration(150)
+                .style("stroke", colorScale(d[initialColor] ?? "Unknown"))
+                .style("stroke-width", 4)
+                .style("stroke-opacity", 1.5);
+        }
+
+        const doNotHighlight = () => {
+            d3.selectAll(".line")
+                .transition().duration(500)
+                .style("stroke", d => colorScale((d as BreastCancerRow)[initialColor] ?? "Unknown"))
+                .style("opacity", 1)
+                .style("stroke-width", 4)
+                .style("stroke-opacity", 1);
+        }
+
+        const xScale = d3.scalePoint()
+            .domain(dimensions)
+            .range([margin.left, width - margin.right]);
+
         dimensions.forEach(dim => {
             const uniqueValues = Array.from(new Set(
-                data.rows.map(d => d[dim as keyof BreastCancerRow]?.toString().trim())
+                sortedData.map(d => d[dim as keyof BreastCancerRow]?.toString().trim())
             ));
             scales[dim] = d3.scalePoint()
                 .domain(uniqueValues)
@@ -65,7 +74,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
         svg.selectAll("*").remove();
         svg.append("g")
             .selectAll("path")
-            .data(data.rows)
+            .data(sortedData)
             .join("path")
             .attr("class", d => `line ${normalize(d, ["Race_Ethnicity", "Age_Group"])}`)
             .attr("fill", "none")
@@ -96,9 +105,14 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
                 .style("fill", "black");
         });
 
-    }, [data]);
+    }, [sortedData, containerDimensions, colorScale]);
 
-    return <svg ref={svgRef} width={900} height={500}/>;
+    return (
+        <div ref={containerRef} style={{width: "100%", height: "100%", maxHeight: "500px", position: "relative"}}>
+            <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
+                 viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
+        </div>
+    );
 };
 
 export default ParallelPlot;
