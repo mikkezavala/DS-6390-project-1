@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {FC, useEffect, useMemo, useRef, useState} from "react";
-import {BarchartProps, BreastCancerRow} from "../types";
+import {BarchartProps} from "../types";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
 import {Flex, Form, Select, Tooltip} from "antd";
