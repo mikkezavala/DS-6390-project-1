@@ -8,8 +8,9 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
     const {containerRef, dimensions: containerDimensions} = useContainerSize();
     const svgRef = useRef<SVGSVGElement | null>(null);
 
+    const [percentage, setPercentage] = useState<Record<string, number>>({});
     const [breadcrumbs, setBreadcrumbs] = useState<string[]>([]);
-    const [percentage, setPercentage] = useState<string>("");
+
 
     useEffect(() => {
         if (!data.length) return;
@@ -64,17 +65,16 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
             .style("cursor", "pointer")
             .on("mouseenter", function (_, d) {
                 const sequence = d.ancestors().reverse().slice(1).map(d => d.data.name);
-                const percent = ((100 * d.value!) / root.value!).toFixed(2);
+                percentage[d.data.name] = parseFloat(((100 * d.value!) / root.value!).toFixed(2));
 
                 setBreadcrumbs(sequence);
-                setPercentage(percent + "%");
+                setPercentage(percentage);
                 path.transition().duration(200)
                     .attr("fill-opacity", node => (sequence.includes(node.data.name) ? 1.0 : 0.3));
             })
             .on("mouseleave", () => {
                 setBreadcrumbs([])
-                setPercentage("");
-
+                setPercentage({});
                 path.transition().duration(200).attr("fill-opacity", 1);
             });
 
@@ -86,20 +86,20 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
     }
     const svgSizing = {
         width: containerDimensions.width,
-        height: 500 - (breadcrumbSizing.marginBottom)
+        height: 500
     }
 
     return (
-        <div ref={containerRef} style={{width: "100%", minHeight: "500px", position: "relative"}}>
+        <div ref={containerRef} style={{width: "100%", maxHeight: "500px"}}>
             <Flex gap="4px" style={{marginBottom: breadcrumbSizing.marginBottom}}>
-                {breadcrumbs.length == 0 ? <Tag color="magenta">Distributions</Tag> : breadcrumbs.map((crumb, _) => (
-                    <Tag color="magenta">{crumb} {percentage &&
-                        <span style={{fontWeight: "bold"}}>{percentage}</span>}</Tag>
+                {breadcrumbs.length == 0 ? <Tag color="magenta">Hover the plot</Tag> : breadcrumbs.map((crumb, index) => (
+                    <Tag key={`crumb-${index}`} color="magenta">{crumb} {percentage?.[crumb] &&
+                        <span style={{fontWeight: "bold"}}>{`${percentage[crumb]}%`}</span>}</Tag>
                 ))}
             </Flex>
             <Flex>
                 <svg ref={svgRef} width={svgSizing.width} height={svgSizing.height - breadcrumbSizing.height}
-                     viewBox={`0 0 ${svgSizing.width} ${svgSizing.height + breadcrumbSizing.marginBottom}`}/>
+                     viewBox={`0 0 ${svgSizing.width} ${svgSizing.height}`}/>
             </Flex>
         </div>
     );

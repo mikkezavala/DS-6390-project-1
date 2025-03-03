@@ -1,11 +1,13 @@
 import * as d3 from "d3";
-import {FC, useEffect, useMemo, useRef} from "react";
+import {FC, useEffect, useMemo, useRef, useState} from "react";
 import {BarchartProps} from "../types";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
+import {Tooltip} from "antd";
 
 const Barchart: FC<BarchartProps> = ({data}) => {
     const margin = {top: 30, right: 30, bottom: 70, left: 60};
+    const [tooltipContent, setTooltipContent] = useState<string>("");
 
     const svgRef = useRef<SVGSVGElement | null>(null);
     const {containerRef, dimensions: containerDimensions} = useContainerSize();
@@ -52,17 +54,6 @@ const Barchart: FC<BarchartProps> = ({data}) => {
             .range([height, 0]);
 
         chart.append("g").call(d3.axisLeft(y));
-
-        const tooltip = d3.select(containerRef.current)
-            .append("div")
-            .style("position", "absolute")
-            .style("background", "white")
-            .style("border", "1px solid black")
-            .style("border-radius", "5px")
-            .style("padding", "5px")
-            .style("font-size", "12px")
-            .style("visibility", "hidden");
-
         const colorScale = d3.scaleOrdinal(d3.schemeRdPu[7]).domain(groupedData.map(d => d.Age_Group));
 
         chart.selectAll("rect")
@@ -76,31 +67,21 @@ const Barchart: FC<BarchartProps> = ({data}) => {
             .each(function (d) {
                 d3.select(this).attr("data-original-fill", colorScale(d.Age_Group)!);
             })
-            .on("mouseover", function (event, d) {
+            .on("mouseover", function (_, d) {
                 const bar = d3.select(this);
 
                 bar.attr("data-original-fill", bar.attr("fill"))
                     .transition().duration(200)
                     .attr("fill", "purple")
                     .attr("opacity", 0.35);
-
-                tooltip.style("visibility", "visible")
-                    .text(`Age: ${d.Age_Group}, Count: ${d.Count}`)
-                    .style("top", `${event.pageY - 1}px`)
-                    .style("left", `${event.pageX + 1}px`);
-            })
-            .on("mousemove", function (event) {
-                tooltip.style("top", `${event.pageY - 1}px`)
-                    .style("left", `${event.pageX + 1}px`);
-            })
-            .on("mouseleave", function () {
-                const bar = d3.select(this)
-                bar.transition().duration(200)
-                    .attr("fill", bar.attr("data-original-fill"))
-                    .attr("opacity", 1);
-
-                tooltip.style("visibility", "hidden");
-            }).transition()
+                setTooltipContent(`Age: ${d.Age_Group}, Count: ${d.Count}`);
+            }).on("mouseleave", function () {
+            const bar = d3.select(this)
+            bar.transition().duration(200)
+                .attr("fill", bar.attr("data-original-fill"))
+                .attr("opacity", 1);
+            setTooltipContent("");
+        }).transition()
             .duration(800)
             .attr("y", d => y(d.Count))
             .attr("height", d => height - y(d.Count))
@@ -110,8 +91,10 @@ const Barchart: FC<BarchartProps> = ({data}) => {
 
     return (
         <div ref={containerRef} style={{width: "100%", height: "100%", maxHeight: "500px", position: "relative"}}>
-            <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
-                 viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
+            <Tooltip title={tooltipContent} open={tooltipContent !== ""}>
+                <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
+                     viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
+            </Tooltip>
         </div>
     );
 };
