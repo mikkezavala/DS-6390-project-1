@@ -10,5 +10,9 @@ export default defineConfig({
         viteStaticCopy({
             targets: [{src: 'src/assets/*.csv', dest: 'assets'}]
         })
-    ]
+    ],
+    build: {
+        outDir: '../docs',
+        emptyOutDir: true
+    }
 })
