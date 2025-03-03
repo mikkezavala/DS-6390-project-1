@@ -53,3 +53,9 @@ export interface SunBurstHierarchy {
     value: number;
     children: any;
 }
+
+export interface ThemeSwitcherProps {
+    themeCode: string;
+    themeAlgorithm: any;
+    themeSwitcher: (mode: string) => void;
+}

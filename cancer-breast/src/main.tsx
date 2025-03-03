@@ -5,19 +5,31 @@ import {App} from './App.tsx'
 import {ConfigProvider, theme} from 'antd'
 import {BrowserRouter} from 'react-router-dom'
 import {ThemeSwitcherContext} from "./providers/ThemeSwitcherContext";
+import {ThemeSwitcherProps} from "./types";
 
 
 export const AppWrapper = () => {
-    const [themeMode, setThemeMode] = useState<any>(() => theme.darkAlgorithm)
+    const [themeMode, setThemeMode] = useState<ThemeSwitcherProps>({
+        themeCode: "dark",
+        themeAlgorithm: theme.darkAlgorithm,
+        themeSwitcher: () => {}
+    });
 
     const toggleTheme: any = (mode: string) => {
-        const themeMode = mode === 'light' ? theme.defaultAlgorithm : theme.darkAlgorithm
-        setThemeMode(() => themeMode)
+        const themeAlgorithm = mode === 'light' ? theme.defaultAlgorithm : theme.darkAlgorithm
+        setThemeMode(() => {
+            return {
+                ...themeMode,
+                themeAlgorithm,
+                themeCode: mode,
+
+            } as ThemeSwitcherProps
+        });
     }
 
-    const value = useMemo(() => ({
-        themeMode,
-        toggleTheme
+    const value: ThemeSwitcherProps = useMemo(() => ({
+        ...themeMode,
+        themeSwitcher: toggleTheme
     }), [themeMode])
 
     return (
@@ -33,7 +45,7 @@ export const AppWrapper = () => {
                         darkItemSelectedBg: '#7a0178'
                     }
                 },
-                algorithm: themeMode,
+                algorithm: themeMode.themeAlgorithm,
                 token: {
                     colorPrimary: '#7a0178',
                 }

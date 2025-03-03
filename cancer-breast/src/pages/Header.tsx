@@ -6,10 +6,10 @@ import {ThemeSwitcherContext} from "../providers/ThemeSwitcherContext";
 import {MoonFilled, SunFilled} from "@ant-design/icons";
 
 export const Header = () => {
-    const {toggleTheme} = useContext(ThemeSwitcherContext)
+    const {themeSwitcher} = useContext(ThemeSwitcherContext)
     const onChange = (checked: boolean) => {
         const theme = checked ? "dark" : "light";
-        toggleTheme(theme)
+        themeSwitcher(theme);
     }
     return (
         <Layout.Header style={{display: 'flex', alignItems: 'center', color: "#fff0f6"}}>

@@ -1,16 +1,21 @@
 import * as d3 from "d3";
-import React, {useEffect, useMemo, useRef} from "react";
+import React, {useContext, useEffect, useMemo, useRef} from "react";
 import {BreastCancerRow, ParallelPlotProps} from "../types";
 import {normalize} from "../util/common";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
 import {Flex} from "antd";
+import {ThemeSwitcherContext} from "../providers/ThemeSwitcherContext";
 
 
 const margin = {top: 50, right: 0, bottom: 50, left: 150};
 const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
     const initialColor = "Race_Ethnicity"
     const svgRef = useRef<SVGSVGElement | null>(null);
+
+    const {themeCode} = useContext(ThemeSwitcherContext)
+    const textColor = themeCode === 'light' ? 'black' : 'white';
+
     // Resize on Re-Render
     const {containerRef, dimensions: containerDimensions} = useContainerSize();
 
@@ -104,10 +109,10 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
                 .attr("text-anchor", "end")
                 .text(dim.replace(/_/g, " "))
                 .style("font-size", "14px")
-                .style("fill", "white");
+                .style("fill", textColor);
         });
 
-    }, [sortedData, containerDimensions, colorScale]);
+    }, [sortedData, containerDimensions, colorScale, textColor]);
 
     return (
         <Flex ref={containerRef} style={{width: "100%", height: "100%", maxHeight: "500px", position: "relative"}}>
