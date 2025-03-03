@@ -5,7 +5,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 // https://vite.dev/config/
 export default defineConfig({
-    base: './',
+    base: '/DS-6390-project-1/',
     plugins: [react(),
         viteStaticCopy({
             targets: [{src: 'src/assets/*.csv', dest: 'assets'}]

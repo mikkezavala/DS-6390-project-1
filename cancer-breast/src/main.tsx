@@ -38,7 +38,7 @@ export const AppWrapper = () => {
                     colorPrimary: '#7a0178',
                 }
             }}>
-                <BrowserRouter>
+                <BrowserRouter basename="/DS-6390-project-1">
                     <App/>
                 </BrowserRouter>
             </ConfigProvider>
