@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef} from "react";
 import {BreastCancerRow, ParallelPlotProps} from "../types";
 import {normalize} from "../util/common";
 import {AGE_ORDER} from "../util/constant";
@@ -12,8 +12,8 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     // Resize on Re-Render
     const { containerRef, dimensions: containerDimensions } = useContainerSize();
-    
-    const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
+
+    const colorScale = d3.scaleOrdinal(d3.schemePaired)
         .domain(Array.from(new Set(data.rows.map(d => d[initialColor]?.toString().trim() ?? "Unknown"))));
 
     const sortedData = useMemo(() => {

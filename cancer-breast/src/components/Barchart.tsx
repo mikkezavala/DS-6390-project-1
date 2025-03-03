@@ -2,13 +2,13 @@ import * as d3 from "d3";
 import {FC, useEffect, useMemo, useRef} from "react";
 import {BarchartProps} from "../types";
 import {AGE_ORDER} from "../util/constant";
+import useContainerSize from "../hooks/resizeHook";
 
 const Barchart: FC<BarchartProps> = ({data}) => {
-
     const margin = {top: 30, right: 30, bottom: 70, left: 60};
-    const width = 700 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+
     const svgRef = useRef<SVGSVGElement | null>(null);
+    const {containerRef, dimensions: containerDimensions} = useContainerSize();
 
     const groupedData = useMemo(() => {
         const groups = data.rows.reduce((acc, row) => {
@@ -23,6 +23,11 @@ const Barchart: FC<BarchartProps> = ({data}) => {
 
     useEffect(() => {
         if (groupedData.length === 0) return;
+        const {width: containerWidth, height: containerHeight} = containerDimensions;
+
+        const width = containerWidth - margin.left - margin.right;
+        const height = containerHeight - margin.top - margin.bottom;
+
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
 
@@ -42,30 +47,73 @@ const Barchart: FC<BarchartProps> = ({data}) => {
             .style("text-anchor", "end");
 
         const y = d3.scaleLinear()
-            .domain([0, d3.max(groupedData, (d) => d.Count) ?? 0])
+            .domain([0, d3.max(groupedData, d => d.Count) ?? 0])
             .nice()
             .range([height, 0]);
 
         chart.append("g").call(d3.axisLeft(y));
 
-        const bars = chart.selectAll("rect")
+        const tooltip = d3.select(containerRef.current)
+            .append("div")
+            .style("position", "absolute")
+            .style("background", "white")
+            .style("border", "1px solid black")
+            .style("border-radius", "5px")
+            .style("padding", "5px")
+            .style("font-size", "12px")
+            .style("visibility", "hidden");
+
+        const colorScale = d3.scaleOrdinal(d3.schemeRdPu[7]).domain(groupedData.map(d => d.Age_Group));
+
+        chart.selectAll("rect")
             .data(groupedData)
             .join("rect")
             .attr("x", d => x(d.Age_Group)!)
             .attr("width", x.bandwidth())
-            .attr("fill", "#69b3a2")
+            .attr("fill", d => colorScale(d.Age_Group)!)
             .attr("height", 0)
-            .attr("y", height);
+            .attr("y", height)
+            .each(function (d) {
+                d3.select(this).attr("data-original-fill", colorScale(d.Age_Group)!);
+            })
+            .on("mouseover", function (event, d) {
+                const bar = d3.select(this);
 
-        bars.transition()
+                bar.attr("data-original-fill", bar.attr("fill"))
+                    .transition().duration(200)
+                    .attr("fill", "purple")
+                    .attr("opacity", 0.35);
+
+                tooltip.style("visibility", "visible")
+                    .text(`Age: ${d.Age_Group}, Count: ${d.Count}`)
+                    .style("top", `${event.pageY - 1}px`)
+                    .style("left", `${event.pageX + 1}px`);
+            })
+            .on("mousemove", function (event) {
+                tooltip.style("top", `${event.pageY - 1}px`)
+                    .style("left", `${event.pageX + 1}px`);
+            })
+            .on("mouseleave", function () {
+                const bar = d3.select(this)
+                bar.transition().duration(200)
+                    .attr("fill", bar.attr("data-original-fill"))
+                    .attr("opacity", 1);
+
+                tooltip.style("visibility", "hidden");
+            }).transition()
             .duration(800)
-            .attr("y", (d) => y(d.Count))
-            .attr("height", (d) => height - y(d.Count))
+            .attr("y", d => y(d.Count))
+            .attr("height", d => height - y(d.Count))
             .delay(250);
 
-    }, [data]);
+    }, [data, containerDimensions, groupedData, margin.left, margin.top, margin.right, margin.bottom, containerRef]);
 
-    return <svg ref={svgRef} width={700} height={400}/>;
+    return (
+        <div ref={containerRef} style={{width: "100%", height: "100%", maxHeight: "500px", position: "relative"}}>
+            <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
+                 viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
+        </div>
+    );
 };
 
 export default Barchart;

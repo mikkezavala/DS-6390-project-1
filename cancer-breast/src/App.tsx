@@ -55,7 +55,7 @@ const App: React.FC = () => {
             </Header>
             <Content style={{padding: '0 20px'}}>
                 <Row gutter={10}>
-                    <Col span={24}>
+                    <Col span={12}>
                         <Card title="Card title" variant="borderless">
                             <Barchart data={chartData}/>
                         </Card>
@@ -67,16 +67,6 @@ const App: React.FC = () => {
                         </Card>
                     </Col>
                 </Row>
-                <div
-                    style={{
-                        padding: 24,
-                        minHeight: 380,
-                        background: colorBgContainer,
-                    }}
-                >
-
-                    {/*<ArcDiagram data={data} />*/}
-                </div>
             </Content>
         </Layout>
     );
