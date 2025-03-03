@@ -12,7 +12,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
     const initialColor = "Race_Ethnicity"
     const svgRef = useRef<SVGSVGElement | null>(null);
     // Resize on Re-Render
-    const { containerRef, dimensions: containerDimensions } = useContainerSize();
+    const {containerRef, dimensions: containerDimensions} = useContainerSize();
 
     const colorScale = d3.scaleOrdinal(d3.schemePaired)
         .domain(Array.from(new Set(data.rows.map(d => d[initialColor]?.toString().trim() ?? "Unknown"))));
@@ -99,12 +99,12 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
                 .attr("transform", `translate(${xScale(dim)},0)`)
                 .call(d3.axisLeft(scales[dim]))
                 .append("text")
-                .attr("y", margin.top - 10)
+                .attr("y", margin.top - 40)
                 .attr("x", -5)
                 .attr("text-anchor", "end")
-                .text(dim)
-                .style("font-size", "12px")
-                .style("fill", "black");
+                .text(dim.replace(/_/g, " "))
+                .style("font-size", "14px")
+                .style("fill", "white");
         });
 
     }, [sortedData, containerDimensions, colorScale]);
