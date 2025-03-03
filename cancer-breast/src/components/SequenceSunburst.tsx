@@ -86,7 +86,8 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
     }
     const svgSizing = {
         width: containerDimensions.width,
-        height: 500
+        height: 500 - (breadcrumbSizing.height < 0 ? 0: breadcrumbSizing.height),
+        viewBoxHeight: 500
     }
 
     return (
@@ -98,8 +99,8 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
                 ))}
             </Flex>
             <Flex>
-                <svg ref={svgRef} width={svgSizing.width} height={svgSizing.height - breadcrumbSizing.height}
-                     viewBox={`0 0 ${svgSizing.width} ${svgSizing.height}`}/>
+                <svg ref={svgRef} width={svgSizing.width} height={svgSizing.height}
+                     viewBox={`0 0 ${svgSizing.width} ${svgSizing.viewBoxHeight}`}/>
             </Flex>
         </div>
     );

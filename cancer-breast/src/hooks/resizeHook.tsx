@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 
 const useContainerSize = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const [dimensions, setDimensions] = useState({ width: 900, height: 500 });
+    const [dimensions, setDimensions] = useState({ width: 900, height: 750 });
 
     useEffect(() => {
         if (!containerRef.current) return;
