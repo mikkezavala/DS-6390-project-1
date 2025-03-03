@@ -18,7 +18,6 @@ const Barchart: FC<BarchartProps> = ({data}) => {
             acc[row.Age_Group].Count += row.Count;
             return acc;
         }, {} as Record<string, { Age_Group: string; Count: number }>);
-        console.log(groups)
         return Object.values(groups).sort((a, b) => AGE_ORDER.indexOf(a.Age_Group) - AGE_ORDER.indexOf(b.Age_Group));
     }, [data]);
 

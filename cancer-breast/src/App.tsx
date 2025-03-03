@@ -18,7 +18,7 @@ const App: React.FC = () => {
     const [data, setData] = useState<BreastCancerData>({meta: {count: 0}, rows: []} as BreastCancerData);
 
     useEffect(() => {
-        d3.csv("./risk_factors_reduced_named.csv").then((csvData) => {
+        d3.csv("assets/risk_factors_reduced_named.csv").then((csvData) => {
             setData({
                 meta: {count: csvData?.length || 0}, rows: csvData.map(d => ({
                     Year: d["Year"],

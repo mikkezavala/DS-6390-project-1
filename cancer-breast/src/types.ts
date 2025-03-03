@@ -21,6 +21,7 @@ export interface BreastCancerRow {
     Biopsy_History: string;
     Breast_Cancer_History: string;
     Count: number;
+    [key: string]: string | number;
 }
 
 export interface BreastCancerData {

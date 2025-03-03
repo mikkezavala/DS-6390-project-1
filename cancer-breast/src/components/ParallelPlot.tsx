@@ -32,9 +32,9 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
         const colorScale = d3.scaleOrdinal(d3.schemeTableau10)
             .domain(Array.from(new Set(data.rows.map(d => d[initialColor]?.toString().trim() ?? "Unknown"))));
 
-        const line = d3.line()
-            .x((_, i) => xScale(dimensions[i])!)
-            .y((d, i) => scales[dimensions[i]](d)!);
+        const line = d3.line<[number, number]>()
+            .x(([x]) => x)
+            .y(([, y]) => y);
 
         dimensions.forEach(dim => {
             const uniqueValues = Array.from(new Set(
@@ -55,7 +55,13 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
             .attr("stroke", d => colorScale(d[initialColor]?.toString() ?? "Unknown"))
             .attr("stroke-opacity", 0.9)
             .attr("stroke-width", 1.5)
-            .attr("d", d => line(dimensions.map(dim => d[dim as keyof BreastCancerRow])))
+            .attr("d", d => {
+                const mappedValues: [number, number][] = dimensions.map(dim => [
+                    xScale(dim)!,
+                    scales[dim]((d as Record<string, any>)[dim]?.toString() ?? "")!
+                ]);
+                return line(mappedValues) ?? "";
+            })
             .on("mouseover", highlight)
             .on("mouseleave", doNotHighlight);
 
@@ -78,7 +84,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
         function doNotHighlight() {
             d3.selectAll(".line")
                 .transition().duration(500)
-                .style("stroke", d => colorScale(d[initialColor] ?? "Unknown"))
+                .style("stroke", d => colorScale((d as BreastCancerRow)[initialColor] ?? "Unknown"))
                 .style("stroke-width", 1.5)
                 .style("stroke-opacity", 1);
         }
