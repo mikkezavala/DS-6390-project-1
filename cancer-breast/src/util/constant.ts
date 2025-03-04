@@ -36,7 +36,12 @@ export const DIMENSIONS = [
     "Hormone_Replacement_Therapy",
     "Breast_Cancer_History",
     "BMI_Group",
-    "Age_First_Birth"
+    "Age_First_Birth",
+    "Menopause_Status",
+    "Biopsy_History",
+    "Age_Menarche",
+    "First_Degree_History",
+    "Year"
 ]
 
 export const ORIGINAL_DS_SIZE = 509410;

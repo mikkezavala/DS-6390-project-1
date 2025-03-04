@@ -131,7 +131,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
                 .style("fill", textColor);
         });
 
-    }, [sortedData, containerDimensions, textColor, activeDimensions, scheme, initialColor, colorScale]);
+    }, [sortedData, containerDimensions, textColor, activeDimensions, scheme, initialColor, colorScale, strokeOff]);
 
     const onSelectChange = (value: string[]) => {
         setActiveDimension(value)
