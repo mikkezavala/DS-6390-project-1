@@ -1,8 +1,9 @@
+import {useMemo} from "react";
 import {Card, Col, Divider, Row} from "antd";
 import Barchart from "../components/Barchart";
 import SequenceSunburst from "../components/SequenceSunburst";
 import ParallelPlot from "../components/ParallelPlot";
-import {useMemo} from "react";
+
 import {AGE_ORDER} from "../util/constant";
 import {useCsvData} from "../hooks/useData";
 
