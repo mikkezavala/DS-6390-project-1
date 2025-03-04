@@ -4,13 +4,13 @@ import Barchart from "./Barchart";
 import SequenceSunburst from "./SequenceSunburst";
 import ParallelPlot from "./ParallelPlot";
 
-import {Card, Col, Divider, Row} from "antd";
+import {Card, Col, Row, Space} from "antd";
 import {TabProps} from "../types";
 
 
 export const TabOne: FC<TabProps> = ({data}) => {
     return (
-        <>
+        <Space wrap size="middle">
             <Row gutter={16}>
                 <Col sm={24} lg={12}>
                     <Card title="Age Distribution" variant="borderless" styles={{
@@ -27,7 +27,6 @@ export const TabOne: FC<TabProps> = ({data}) => {
                     </Card>
                 </Col>
             </Row>
-            <Divider style={{margin: '2px 0'}}/>
             <Row gutter={16}>
                 <Col sm={24} lg={24}>
                     <Card title="Multi-Dimensional View of Breast Cancer Risk Contributors"
@@ -36,6 +35,6 @@ export const TabOne: FC<TabProps> = ({data}) => {
                     </Card>
                 </Col>
             </Row>
-        </>
+        </Space>
     );
 }
