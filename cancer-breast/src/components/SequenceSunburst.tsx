@@ -2,9 +2,10 @@ import * as d3 from "d3";
 import {FC, useContext, useEffect, useRef, useState} from "react";
 import useContainerSize from "../hooks/resizeHook";
 import {BreastCancerRow, SunBurstCoords, SunBurstHierarchy, SunburstProps} from "../types";
-import {Col, Form, Row, Select, Tag} from "antd";
+import {Col, Empty, Form, Row, Select, Tag} from "antd";
 import {normalizeLabel, prepareOptions} from "../util/common";
 import {SchemeSwitcherContext} from "../providers/SchemeSwitcherContext";
+import {DIMENSIONS} from "../util/constant";
 
 const Sunburst: FC<SunburstProps> = ({data}) => {
     const {scheme} = useContext(SchemeSwitcherContext)
@@ -13,16 +14,8 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
 
     const [breadcrumbs, setBreadcrumbs] = useState<string[]>([]);
     const [percentage, setPercentage] = useState<Record<string, number>>({});
-    const sequenceOptions = [
-        "Race_Ethnicity",
-        "Age_Group",
-        "Breast_Density",
-        "Hormone_Replacement_Therapy",
-        "Breast_Cancer_History",
-        "BMI_Group",
-        "Age_First_Birth"
-    ]
-    const [activeSequence, setActiveSequence] = useState<string[]>(sequenceOptions.slice(0, 3))
+
+    const [activeSequence, setActiveSequence] = useState<string[]>(DIMENSIONS.slice(0, 3))
 
     useEffect(() => {
         if (!data.rows.length) return;
@@ -109,6 +102,10 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
         viewBoxHeight: containerDimensions.height - 50
     }
 
+    if (!svgRef) {
+        return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+    }
+
     return (
         <Row>
             <Col span={24}>
@@ -121,10 +118,10 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
                         <Select
                             allowClear
                             mode="multiple"
-                            style={{width: '80%'}}
+                            style={{width: '97%'}}
                             onChange={onSelectChange}
                             placeholder="Select Risk Factors"
-                            options={prepareOptions(sequenceOptions)}
+                            options={prepareOptions(DIMENSIONS)}
                         />
                     </Form.Item>
                 </Form>

@@ -69,3 +69,7 @@ export interface SchemeSwitcherProps {
 export interface DataSetProps {
     data: BreastCancerData;
 }
+
+export interface TabProps {
+    data: BreastCancerData;
+}

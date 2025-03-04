@@ -4,7 +4,7 @@ import {BreastCancerRow, ParallelPlotProps} from "../types";
 import {normalize, normalizeLabel, prepareOptions} from "../util/common";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
-import {Col, Form, Row, Select} from "antd";
+import {Col, Empty, Form, Row, Select} from "antd";
 import {ThemeSwitcherContext} from "../providers/ThemeSwitcherContext";
 import {SchemeSwitcherContext} from "../providers/SchemeSwitcherContext";
 
@@ -51,7 +51,6 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
         // Let's prepare some variables
         const svg = d3.select(svgRef.current);
         const scales: { [key: string]: d3.ScalePoint<string> } = {};
-
 
         // Helper functions, sadly they need to be computed in rendering
         const line = d3.line<[number, number]>()
@@ -136,6 +135,10 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
 
     const onSelectChange = (value: string[]) => {
         setActiveDimension(value)
+    }
+
+    if (!svgRef) {
+        return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
 
     return (

@@ -8,6 +8,8 @@ import {ThemeSwitcherContext} from "./providers/ThemeSwitcherContext";
 import {SchemeSwitcherProps, ThemeSwitcherProps} from "./types";
 import {SchemeSwitcherContext} from "./providers/SchemeSwitcherContext";
 import {SCHEME_MODE_CONFIG} from "./util/components";
+import {COLOR_VALUES} from "./util/constant";
+import {isDarkMode} from "./util/common";
 
 
 export const AppWrapper = () => {
@@ -60,17 +62,20 @@ export const AppWrapper = () => {
                 <ConfigProvider theme={{
                     components: {
                         Layout: {
-                            headerBg: '#520339',
-                            headerColor: '#520339'
+                            headerBg: COLOR_VALUES.dark.bgColor,
+                            headerColor: COLOR_VALUES.dark.bgColor
                         },
                         Menu: {
-                            darkItemBg: '#520339',
-                            darkItemSelectedBg: '#7a0178'
+                            darkItemBg: COLOR_VALUES.dark.bgColor,
+                            darkItemSelectedBg: COLOR_VALUES.dark.bgSelected
                         },
+                        Tabs: {
+                            itemSelectedColor: isDarkMode(themeMode.themeCode) ? '#ffadd2' : '#520339',
+                        }
                     },
                     algorithm: themeMode.themeAlgorithm,
                     token: {
-                        colorPrimary: '#7a0178',
+                        colorPrimary: COLOR_VALUES.primary,
                     }
                 }}>
                     <BrowserRouter basename="/DS-6390-project-1">

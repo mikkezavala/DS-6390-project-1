@@ -29,8 +29,25 @@ export const COLUMNS: TableColumnsType<BreastCancerRow> = [
     },
     {title: 'Count', dataIndex: 'Count', key: 'Count', responsive: ['xl']},
 ];
+export const DIMENSIONS = [
+    "Race_Ethnicity",
+    "Age_Group",
+    "Breast_Density",
+    "Hormone_Replacement_Therapy",
+    "Breast_Cancer_History",
+    "BMI_Group",
+    "Age_First_Birth"
+]
 
 export const ORIGINAL_DS_SIZE = 509410;
 export const GUTTER_SIZE: Gutter = [16, 16] as Gutter
 export const DS_LINK_DOCS: string = "https://www.bcsc-research.org/index.php/datasets/rf/documentation"
 export const DS_LINK: string = "https://www.bcsc-research.org/index.php/datasets/rf"
+
+export const COLOR_VALUES = {
+    "primary": "#7a0178",
+    "dark": {
+        "bgColor": "#520339",
+        "bgSelected": "#7a0178"
+    }
+}

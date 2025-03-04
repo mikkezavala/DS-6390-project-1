@@ -3,16 +3,20 @@ import {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {BarchartProps} from "../types";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
-import {Flex, Form, Select, Tooltip} from "antd";
+import {Col, Form, Row, Select, Tooltip} from "antd";
 import {prepareOptions} from "../util/common";
 import {SchemeSwitcherContext} from "../providers/SchemeSwitcherContext";
+import {useIsVisible} from "../hooks/useVisible";
 
+const margin = {top: 30, right: 30, bottom: 120, left: 60};
 const Barchart: FC<BarchartProps> = ({data}) => {
-    const margin = {top: 30, right: 30, bottom: 120, left: 60};
+
     const [tooltipContent, setTooltipContent] = useState<string>("");
     const svgRef = useRef<SVGSVGElement | null>(null);
-    const {containerRef, dimensions: containerDimensions} = useContainerSize();
+
     const {scheme} = useContext(SchemeSwitcherContext)
+    const {containerRef, dimensions: containerDimensions} = useContainerSize();
+    const isVisible = useIsVisible(containerRef);
 
     const filterGroups = [
         "Age_Group", "Race_Ethnicity", "Breast_Density"
@@ -20,6 +24,8 @@ const Barchart: FC<BarchartProps> = ({data}) => {
     const [activeGroup, setActiveGroup] = useState<string>("Age_Group")
 
     const groupedData = useMemo(() => {
+        if (!data.rows) return [];
+
         const groups = data.rows.reduce((acc, row) => {
             if (!acc[row[activeGroup]]) {
                 acc[row[activeGroup]] = {ActiveGroup: row[activeGroup] as string, Count: 0};
@@ -31,11 +37,13 @@ const Barchart: FC<BarchartProps> = ({data}) => {
     }, [data, activeGroup]);
 
     useEffect(() => {
-        if (groupedData.length === 0) return;
         const {width: containerWidth, height: containerHeight} = containerDimensions;
-
         const width = containerWidth - margin.left - margin.right;
         const height = containerHeight - margin.top - margin.bottom;
+
+        if ((groupedData.length === 0) || (width <= 0 || height <= 0) || !isVisible) {
+            return;
+        }
 
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
@@ -95,35 +103,42 @@ const Barchart: FC<BarchartProps> = ({data}) => {
             .attr("height", d => height - y(d.Count))
             .delay(250);
 
-    }, [data, containerDimensions, groupedData, margin.left, margin.top, margin.right, margin.bottom, containerRef, scheme]);
+    }, [isVisible, containerDimensions, groupedData, containerRef, scheme]);
 
     const onSelectChange = (value: string) => {
         setActiveGroup(value)
     }
 
+    const svgSizing = {
+        width: containerDimensions.width,
+        height: containerDimensions.height,
+        viewBoxHeight: containerDimensions.height
+    }
+
     return (
-        <Flex gap="middle" wrap vertical>
-            <Form name="hist-cat-select">
-                <Form.Item<string>
-                    label="Select Category"
-                    name="hist-cat-select-item"
-                    initialValue={activeGroup}
-                >
-                    <Select
-                        style={{width: '50%'}}
-                        onChange={onSelectChange}
-                        options={prepareOptions(filterGroups)}
-                    />
-                </Form.Item>
-            </Form>
-            <Flex wrap vertical ref={containerRef}
-                  style={{width: "100%", maxHeight: containerDimensions.height, position: "relative"}}>
+        <Row ref={containerRef}>
+            <Col span={24}>
+                <Form name="hist-cat-select">
+                    <Form.Item<string>
+                        label="Select Category"
+                        name="hist-cat-select-item"
+                        initialValue={activeGroup}
+                    >
+                        <Select
+                            style={{width: '70%'}}
+                            onChange={onSelectChange}
+                            options={prepareOptions(filterGroups)}
+                        />
+                    </Form.Item>
+                </Form>
+            </Col>
+            <Col span={24}  style={{width: "100%", minHeight: 500, maxHeight: 766}}>
                 <Tooltip title={tooltipContent} open={tooltipContent !== ""}>
-                    <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
-                         viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
+                    <svg ref={svgRef} width={containerDimensions.width} height={svgSizing.viewBoxHeight}
+                         viewBox={`0 0 ${svgSizing.width} ${svgSizing.viewBoxHeight}`}/>
                 </Tooltip>
-            </Flex>
-        </Flex>
+            </Col>
+        </Row>
     );
 };
 

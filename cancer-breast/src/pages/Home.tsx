@@ -1,12 +1,11 @@
 import {Suspense, useMemo} from "react";
-import {Card, Col, Divider, Row} from "antd";
-import Barchart from "../components/Barchart";
-import SequenceSunburst from "../components/SequenceSunburst";
-import ParallelPlot from "../components/ParallelPlot";
+import {Tabs} from "antd";
 
 import {AGE_ORDER} from "../util/constant";
 import {useCsvData} from "../hooks/useData";
 import {Loading} from "../components/Loading";
+import {TabOne} from "../components/TabOne";
+import {TabTwo} from "../components/TabTwo";
 
 
 export const Home = () => {
@@ -22,26 +21,18 @@ export const Home = () => {
 
     return (
         <Suspense fallback={<Loading/>}>
-            <Row gutter={16}>
-                <Col sm={24} lg={12}>
-                    <Card title="Age Distribution" variant="borderless">
-                        <Barchart data={chartData}/>
-                    </Card>
-                </Col>
-                <Col sm={24} lg={12}>
-                    <Card title="Multi-Level Hierarchical Breast Cancer Risk Factors" variant="borderless">
-                        <SequenceSunburst data={chartData}/>
-                    </Card>
-                </Col>
-            </Row>
-            <Divider style={{margin: '2px 0'}}/>
-            <Row gutter={16}>
-                <Col sm={24} lg={24}>
-                    <Card title="Multi-Dimensional View of Breast Cancer Risk Contributors" variant="borderless">
-                        <ParallelPlot data={chartData}/>
-                    </Card>
-                </Col>
-            </Row>
+            <Tabs items={[
+                {
+                    key: "1",
+                    label: 'Analysis Data Set',
+                    children: <TabOne data={chartData}/>,
+                },
+                {
+                    key: "2",
+                    label: 'Variable Analysis',
+                    children: <TabTwo data={chartData}/>,
+                }
+            ]}/>
         </Suspense>
     );
 }
