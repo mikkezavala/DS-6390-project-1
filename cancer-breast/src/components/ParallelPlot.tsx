@@ -142,7 +142,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
     }
 
     return (
-        <Row ref={containerRef} style={{width: "100%", height: "100%", maxHeight: "500px", position: "relative"}}>
+        <Row ref={containerRef} style={{width: "100%", height: "100%", maxHeight: 700}}>
             <Col span={24}>
                 <Form name="risk-parallel-select">
                     <Form.Item<string>
@@ -162,7 +162,7 @@ const ParallelPlot: React.FC<ParallelPlotProps> = ({data}) => {
                 </Form>
             </Col>
             <Col span={24}>
-                <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
+                <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height - margin.bottom}
                      viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
             </Col>
         </Row>);

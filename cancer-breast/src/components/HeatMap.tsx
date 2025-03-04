@@ -106,8 +106,8 @@ export const HeatMap: FC<TabProps> = ({ data }) => {
                 </Form>
             </Col>
             <Col span={24}>
-                <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height}
-                     viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`}/>
+                <svg ref={svgRef} width={containerDimensions.width} height={containerDimensions.height - 50}
+                     viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height - 50}`}/>
                 <div ref={tooltipRef}
                      style={{
                          color: token.colorTextBase,

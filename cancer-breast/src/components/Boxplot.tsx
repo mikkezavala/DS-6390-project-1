@@ -93,9 +93,9 @@ export const BoxPlot: FC<TabProps> = ({data}) => {
             .attr("fill", d => colorScale(d.key))
             .attr("opacity", 0.5)
             .attr("stroke", "black").on("mouseover", function (event, d) {
-                tooltip.style("display", "block")
-                    .style("opacity", 1)
-                    .html(`
+            tooltip.style("display", "block")
+                .style("opacity", 1)
+                .html(`
                         <strong>${d.key}</strong><br>
                         Min: ${d.min} <br>
                         Q1: ${d.q1} <br>
@@ -103,8 +103,8 @@ export const BoxPlot: FC<TabProps> = ({data}) => {
                         Q3: ${d.q3} <br>
                         Max: ${d.max}
                     `)
-                    .style("left", `${event.clientX + 10}px`)
-                    .style("top", `${event.clientY - 30}px`);
+                .style("left", `${event.clientX + 10}px`)
+                .style("top", `${event.clientY - 30}px`);
         }).on("mousemove", function (event) {
             tooltip
                 .style("left", `${event.clientX + 10}px`)
