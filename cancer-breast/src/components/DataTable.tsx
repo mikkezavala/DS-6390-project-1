@@ -8,7 +8,7 @@ export const DataTable: FC<DataSetProps> = ({data}) => {
     return (
         <Row gutter={8}>
             <Col span={24}>
-                <Table<BreastCancerRow> columns={COLUMNS} dataSource={data.rows}/>
+                <Table<BreastCancerRow> key="main-table" columns={COLUMNS} dataSource={data.rows}/>
             </Col>
         </Row>
     );

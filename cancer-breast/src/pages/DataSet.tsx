@@ -4,9 +4,18 @@ import {useCsvData} from "../hooks/useData";
 import CountUp from 'react-countup';
 import {useMemo} from "react";
 import {calculateStats} from "../util/common";
-import {AGE_ORDER, BMI_ORDER, DS_LINK, DS_LINK_DOCS, GUTTER_SIZE} from "../util/constant";
+import {AGE_ORDER, BMI_ORDER, DS_LINK, DS_LINK_DOCS, GUTTER_SIZE, ORIGINAL_DS_SIZE} from "../util/constant";
 import {LinkOutlined} from "@ant-design/icons";
+import {BreastCancerData} from "../types";
 
+
+const formatter: StatisticProps['formatter'] = (value) => (
+    <CountUp end={value as number} separator=","/>
+);
+
+const percentageFormatter: StatisticProps['formatter'] = (value) => {
+    return (<CountUp end={value as number} suffix="%" decimals={2}/>);
+}
 
 const buildLink = (title: string, target: string) => {
     return (
@@ -15,11 +24,25 @@ const buildLink = (title: string, target: string) => {
     );
 }
 
+const buildStatsHeader = (data: BreastCancerData) => {
+    const percent = (data.meta.count / ORIGINAL_DS_SIZE) * 100
+    return (
+        <Row>
+            <Col span={8}>
+                <Statistic title="Records in Data Set" value={data.meta.count} formatter={formatter}/>
+            </Col>
+            <Col span={8}>
+                <Statistic title="Original Data Set Size" value={ORIGINAL_DS_SIZE} formatter={formatter}/>
+            </Col>
+            <Col span={8}>
+                <Statistic title="Randomly Sampled Percentage" value={percent} formatter={percentageFormatter}/>
+            </Col>
+        </Row>
+    )
+}
+
 export const DataSet = () => {
     const [data, loading, error] = useCsvData('/DS-6390-project-1/assets/risk_factors_reduced_named.csv');
-    const formatter: StatisticProps['formatter'] = (value) => (
-        <CountUp end={value as number} separator=","/>
-    );
 
     const stats = useMemo(() => {
         return calculateStats(data);
@@ -43,8 +66,7 @@ export const DataSet = () => {
             <Col span={24}>
                 <Card variant="borderless"
                       actions={[buildLink("Source", DS_LINK), buildLink("Documentation", DS_LINK_DOCS)]}>
-                    <Card.Meta description={<Statistic title="Records in Data Set" value={data.meta.count}
-                                                       formatter={formatter}/>}/>
+                    <Card.Meta description={buildStatsHeader(data)}/>
                     <p>
                         This risk factors dataset may be useful to people interested in exploring the distribution of
                         breast cancer risk factors in US women. The dataset includes information from 6,788,436
@@ -54,6 +76,13 @@ export const DataSet = () => {
                         density, use of hormone replacement therapy, menopausal status, body mass index, history of
                         biopsy, and history of breast cancer.
                     </p>
+                    <div>
+                        <h3>Data Cleanup</h3>
+                        <p>
+                            Selection process was to take 90,000 rows from original, and removed rows where the
+                            "Unknown" was present, resulting in the above number of rows.
+                        </p>
+                    </div>
                 </Card>
             </Col>
             <Col sm={24} lg={12}>

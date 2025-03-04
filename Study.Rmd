@@ -31,11 +31,13 @@ head(data)
 library(dplyr)
 
 # Load dataset
-df <- read.csv("risk_factors_reduced.csv", stringsAsFactors = FALSE)
+df <- read.csv("./risk_factors.csv", stringsAsFactors = FALSE)
 
-max_size <- 2500
+original_rows <- nrow(df)
+
+max_size <- 90000
 # Rename columns with spaces (using backticks when needed)
-df_clean <- df |> sample_n(max_size) |>
+df_clean <- df |> dplyr::sample_n(max_size, replace = TRUE) |>
   rename(
     `Year` = year,
     `Age_Group` = age_group_5_years,
@@ -145,11 +147,12 @@ df_clean <- df |> sample_n(max_size) |>
   ) |> filter(!if_any(everything(), ~ . == "Unknown"))
 
 
+target_file <- "cancer-breast/src/assets/risk_factors_reduced_named.csv"
 # Save cleaned data as CSV for D3.js
-write.csv(df_clean, "risk_factors_reduced_named.csv", row.names = FALSE)
+write.csv(df_clean, target_file, row.names = FALSE)
 
 # Print success message
-cat("CSV file 'risk_factors_reduced_named.csv' created successfully!")
+sprintf("CSV file %s created successfully - Records: %d from %s", target_file, nrow(df_clean), original_rows)
 
 # json_data <- toJSON(data, pretty = TRUE)
 #
