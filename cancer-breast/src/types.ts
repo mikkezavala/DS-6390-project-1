@@ -2,11 +2,6 @@ export interface DataMeta {
     count: number;
 }
 
-export interface GroupMeta {
-    count: number;
-    field: string;
-}
-
 export interface BreastCancerRow {
     Year: string;
     Age_Group: string;
@@ -21,6 +16,7 @@ export interface BreastCancerRow {
     Biopsy_History: string;
     Breast_Cancer_History: string;
     Count: number;
+
     [key: string]: string | number;
 }
 
@@ -72,4 +68,14 @@ export interface DataSetProps {
 
 export interface TabProps {
     data: BreastCancerData;
+}
+
+export interface SummaryStatistics {
+    key: string;
+    q1: number;
+    q3: number;
+    median: number;
+    iqr: number;
+    min: number;
+    max: number;
 }
