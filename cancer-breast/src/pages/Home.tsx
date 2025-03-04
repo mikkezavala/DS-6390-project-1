@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import {Suspense, useMemo} from "react";
 import {Card, Col, Divider, Row} from "antd";
 import Barchart from "../components/Barchart";
 import SequenceSunburst from "../components/SequenceSunburst";
@@ -6,6 +6,7 @@ import ParallelPlot from "../components/ParallelPlot";
 
 import {AGE_ORDER} from "../util/constant";
 import {useCsvData} from "../hooks/useData";
+import {Loading} from "../components/Loading";
 
 
 export const Home = () => {
@@ -17,10 +18,10 @@ export const Home = () => {
             ...data,
             data: [...data.rows].sort((a, b) => AGE_ORDER.indexOf(a.Age_Group) - AGE_ORDER.indexOf(b.Age_Group))
         };
-    }, [data]);
+    }, [data, error, loading]);
 
     return (
-        <>
+        <Suspense fallback={<Loading/>}>
             <Row gutter={16}>
                 <Col sm={24} lg={12}>
                     <Card title="Age Distribution" variant="borderless">
@@ -41,6 +42,6 @@ export const Home = () => {
                     </Card>
                 </Col>
             </Row>
-        </>
+        </Suspense>
     );
 }

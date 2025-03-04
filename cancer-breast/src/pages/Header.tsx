@@ -1,16 +1,29 @@
-import {Avatar, Layout, Menu, Switch} from "antd";
-import {Link} from "react-router-dom";
-import ribbon from '/src/assets/ribbon.png'
 import {useContext} from "react";
+import {Link} from "react-router-dom";
+import {Avatar, Dropdown, Layout, Menu, MenuProps, Space, Switch} from "antd";
 import {ThemeSwitcherContext} from "../providers/ThemeSwitcherContext";
-import {MoonFilled, SunFilled} from "@ant-design/icons";
+import {DownOutlined, MoonFilled, SunFilled} from "@ant-design/icons";
+import {COLOR_SCHEMES} from "../util/components";
+import {SchemeSwitcherContext} from "../providers/SchemeSwitcherContext";
+
+import ribbon from '/src/assets/ribbon.png'
 
 export const Header = () => {
     const {themeSwitcher} = useContext(ThemeSwitcherContext)
+    const {schemeCode, schemeSwitcher} = useContext(SchemeSwitcherContext)
+
     const onChange = (checked: boolean) => {
         const theme = checked ? "dark" : "light";
         themeSwitcher(theme);
     }
+
+    const onSchemeChange: MenuProps['onClick'] = (evt: any) => {
+        const scheme = evt.key
+        schemeSwitcher(scheme);
+    }
+
+    const schemeLabel = (COLOR_SCHEMES?.find(color => color?.key == schemeCode) as any)?.label;
+
     return (
         <Layout.Header style={{display: 'flex', alignItems: 'center', color: "#fff0f6"}}>
             <div style={{color: "#fff", marginRight: 10}}>
@@ -35,12 +48,29 @@ export const Header = () => {
                 </Menu.Item>
 
             </Menu>
-            <Switch
-                onChange={onChange}
-                defaultChecked
-                checkedChildren={<MoonFilled/>}
-                unCheckedChildren={<SunFilled/>}
-            />
+            <Space wrap>
+                <Dropdown.Button
+                    type="primary"
+                    icon={<DownOutlined/>}
+                    onClick={(evt) => {
+                        evt.preventDefault()
+                    }}
+                    menu={{
+                        selectable: true,
+                        items: COLOR_SCHEMES,
+                        onClick: onSchemeChange,
+                        defaultSelectedKeys: [schemeCode],
+                    }}
+                >
+                    {schemeLabel && schemeLabel || "Select Color Scheme"}
+                </Dropdown.Button>
+                <Switch
+                    onChange={onChange}
+                    defaultChecked
+                    checkedChildren={<MoonFilled/>}
+                    unCheckedChildren={<SunFilled/>}
+                />
+            </Space>
         </Layout.Header>
     );
 }

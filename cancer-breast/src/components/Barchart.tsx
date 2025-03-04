@@ -1,16 +1,18 @@
 import * as d3 from "d3";
-import {FC, useEffect, useMemo, useRef, useState} from "react";
+import {FC, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {BarchartProps} from "../types";
 import {AGE_ORDER} from "../util/constant";
 import useContainerSize from "../hooks/resizeHook";
 import {Flex, Form, Select, Tooltip} from "antd";
 import {prepareOptions} from "../util/common";
+import {SchemeSwitcherContext} from "../providers/SchemeSwitcherContext";
 
 const Barchart: FC<BarchartProps> = ({data}) => {
     const margin = {top: 30, right: 30, bottom: 120, left: 60};
     const [tooltipContent, setTooltipContent] = useState<string>("");
     const svgRef = useRef<SVGSVGElement | null>(null);
     const {containerRef, dimensions: containerDimensions} = useContainerSize();
+    const {scheme} = useContext(SchemeSwitcherContext)
 
     const filterGroups = [
         "Age_Group", "Race_Ethnicity", "Breast_Density"
@@ -59,7 +61,7 @@ const Barchart: FC<BarchartProps> = ({data}) => {
             .range([height, 0]);
 
         chart.append("g").call(d3.axisLeft(y));
-        const colorScale = d3.scaleOrdinal(d3.schemeRdPu[7]).domain(groupedData.map(d => d.ActiveGroup));
+        const colorScale = d3.scaleOrdinal(scheme).domain(groupedData.map(d => d.ActiveGroup));
 
         chart.selectAll("rect")
             .data(groupedData)
@@ -93,7 +95,7 @@ const Barchart: FC<BarchartProps> = ({data}) => {
             .attr("height", d => height - y(d.Count))
             .delay(250);
 
-    }, [data, containerDimensions, groupedData, margin.left, margin.top, margin.right, margin.bottom, containerRef]);
+    }, [data, containerDimensions, groupedData, margin.left, margin.top, margin.right, margin.bottom, containerRef, scheme]);
 
     const onSelectChange = (value: string) => {
         setActiveGroup(value)
@@ -101,15 +103,15 @@ const Barchart: FC<BarchartProps> = ({data}) => {
 
     return (
         <Flex gap="middle" wrap vertical>
-            <Form name="cat-select">
+            <Form name="hist-cat-select">
                 <Form.Item<string>
                     label="Select Category"
-                    name="category"
+                    name="hist-cat-select-item"
+                    initialValue={activeGroup}
                 >
                     <Select
                         style={{width: '50%'}}
                         onChange={onSelectChange}
-                        defaultValue={activeGroup}
                         options={prepareOptions(filterGroups)}
                     />
                 </Form.Item>

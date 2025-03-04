@@ -1,13 +1,15 @@
 import * as d3 from "d3";
-import {FC, useEffect, useRef, useState} from "react";
+import {FC, useContext, useEffect, useRef, useState} from "react";
 import useContainerSize from "../hooks/resizeHook";
 import {BreastCancerRow, SunBurstCoords, SunBurstHierarchy, SunburstProps} from "../types";
 import {Col, Form, Row, Select, Tag} from "antd";
 import {normalizeLabel, prepareOptions} from "../util/common";
+import {SchemeSwitcherContext} from "../providers/SchemeSwitcherContext";
 
 const Sunburst: FC<SunburstProps> = ({data}) => {
-    const {containerRef, dimensions: containerDimensions} = useContainerSize();
+    const {scheme} = useContext(SchemeSwitcherContext)
     const svgRef = useRef<SVGSVGElement | null>(null);
+    const {containerRef, dimensions: containerDimensions} = useContainerSize();
 
     const [breadcrumbs, setBreadcrumbs] = useState<string[]>([]);
     const [percentage, setPercentage] = useState<Record<string, number>>({});
@@ -36,7 +38,6 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
                     curr.push(row[next].toString());
                     return curr
                 }, []).filter(Boolean)
-                // const sequence = [row.Race_Ethnicity, row.Age_Group, row.Breast_Density].filter(Boolean);
                 sequence.forEach((name, i) => {
                     let existing = currentLevel.find((d: any) => d.name === name);
                     if (!existing) {
@@ -63,7 +64,7 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
             .outerRadius(d => d.y1!);
 
         const svg = d3.select(svgRef.current);
-        const color = d3.scaleOrdinal(d3.schemeRdPu[3]);
+        const color = d3.scaleOrdinal(scheme);
 
         svg.selectAll("*").remove();
         svg.attr("viewBox", `${-radius} ${-radius} ${width} ${width}`)
@@ -92,7 +93,7 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
                 path.transition().duration(200).attr("fill-opacity", 1);
             });
 
-    }, [data, containerDimensions, activeSequence]);
+    }, [data, containerDimensions, activeSequence, percentage, scheme]);
 
     const onSelectChange = (value: string[]) => {
         setActiveSequence(value)
@@ -104,24 +105,24 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
     }
     const svgSizing = {
         width: containerDimensions.width,
-        height: containerDimensions.height - (breadcrumbSizing.height + breadcrumbSizing.marginBottom) -100,
+        height: containerDimensions.height - (breadcrumbSizing.height + breadcrumbSizing.marginBottom) - 100,
         viewBoxHeight: containerDimensions.height - 50
     }
 
     return (
         <Row>
             <Col span={24}>
-                <Form name="cat-select">
+                <Form name="seq-cat-select">
                     <Form.Item<string>
                         label="Select Category"
-                        name="category"
+                        name="seq-cat-select-item"
+                        initialValue={activeSequence}
                     >
                         <Select
                             allowClear
                             mode="multiple"
                             style={{width: '80%'}}
                             onChange={onSelectChange}
-                            defaultValue={activeSequence}
                             placeholder="Select Risk Factors"
                             options={prepareOptions(sequenceOptions)}
                         />
@@ -141,9 +142,7 @@ const Sunburst: FC<SunburstProps> = ({data}) => {
                      viewBox={`0 0 ${svgSizing.width} ${svgSizing.viewBoxHeight}`}/>
             </Col>
         </Row>
-
-    )
-        ;
+    );
 };
 
 export default Sunburst;

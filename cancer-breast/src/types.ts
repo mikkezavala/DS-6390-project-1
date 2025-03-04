@@ -60,6 +60,12 @@ export interface ThemeSwitcherProps {
     themeSwitcher: (mode: string) => void;
 }
 
+export interface SchemeSwitcherProps {
+    scheme: string[];
+    schemeCode: string;
+    schemeSwitcher: (mode: string) => void;
+}
+
 export interface DataSetProps {
     data: BreastCancerData;
 }
