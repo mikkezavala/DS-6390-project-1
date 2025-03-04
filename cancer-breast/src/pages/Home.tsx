@@ -21,7 +21,7 @@ export const Home = () => {
 
     return (
         <Suspense fallback={<Loading/>}>
-            <Tabs items={[
+            <Tabs destroyInactiveTabPane items={[
                 {
                     key: "1",
                     label: 'Analysis Data Set',
