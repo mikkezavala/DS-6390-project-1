@@ -21,21 +21,20 @@ export const Home = () => {
     return (
         <>
             <Row gutter={16}>
-                <Col span={12}>
+                <Col sm={24} lg={12}>
                     <Card title="Age Distribution" variant="borderless">
                         <Barchart data={chartData}/>
                     </Card>
                 </Col>
-                <Col span={12}>
+                <Col sm={24} lg={12}>
                     <Card title="Multi-Level Hierarchical Breast Cancer Risk Factors" variant="borderless">
                         <SequenceSunburst data={chartData}/>
                     </Card>
                 </Col>
-
             </Row>
             <Divider style={{margin: '2px 0'}}/>
             <Row gutter={16}>
-                <Col span={24}>
+                <Col sm={24} lg={24}>
                     <Card title="Multi-Dimensional View of Breast Cancer Risk Contributors" variant="borderless">
                         <ParallelPlot data={chartData}/>
                     </Card>

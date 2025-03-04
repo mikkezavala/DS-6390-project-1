@@ -7,7 +7,7 @@ import ba from '/src/assets/ba.png'
 export const Team = () => {
     return (
         <Row gutter={16}>
-            <Col span={8}>
+            <Col sm={24} lg={8}>
                 <Card variant="borderless">
                     <Card.Meta avatar={<Avatar src={mza}/>} title="Miguel Zavala"/>
                     <p>
@@ -22,7 +22,7 @@ export const Team = () => {
                     </p>
                 </Card>
             </Col>
-            <Col span={8}>
+            <Col sm={24} lg={8}>
                 <Card variant="borderless">
                     <Card.Meta avatar={<Avatar src={bb}/>} title="Brittany Blackmon"/>
                     <p>
@@ -46,7 +46,7 @@ export const Team = () => {
                     </p>
                 </Card>
             </Col>
-            <Col span={8}>
+            <Col sm={24} lg={8}>
                 <Card variant="borderless">
                     <Card.Meta avatar={<Avatar src={ba}/>} title="Blake Armstrong"/>
                     <p>

@@ -56,7 +56,7 @@ export const DataSet = () => {
                     </p>
                 </Card>
             </Col>
-            <Col span={12}>
+            <Col sm={24} lg={12}>
                 <Card title="Age Groups Distribution">
                     <Row gutter={GUTTER_SIZE}>
                         {ageStats.map(([category, count]) => (
@@ -67,7 +67,7 @@ export const DataSet = () => {
                     </Row>
                 </Card>
             </Col>
-            <Col span={12}>
+            <Col sm={24} lg={12}>
                 <Row gutter={[16, 70]}>
                     <Col span={24}>
                         <Card title="BMI Groups Distribution">
