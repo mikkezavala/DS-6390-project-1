@@ -12,4 +12,4 @@
 
 ## Site screenshot
 
-![Research](viz.jgeg "Breast Cancer Research")
+!["Breast Cancer Research"](https://github.com/mikkezavala/DS-6390-project-1/blob/main/viz.jpeg?raw=true)
